@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FileCheck, Check, X, AlertCircle } from 'lucide-react';
+import { FileCheck, Check, X } from 'lucide-react';
 
 interface KYCVerification {
   user_id: string;

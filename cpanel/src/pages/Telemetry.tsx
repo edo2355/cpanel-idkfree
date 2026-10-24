@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 export default function Telemetry() {
   const [logs, setLogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchLogs() {
