@@ -32,7 +32,7 @@ app.post('/api/admin/login', async (req, reply) => {
 
     const accessToken = app.jwt.sign({ sub: admin.id, role: admin.role }, { expiresIn: '2h' });
     return reply.send({ accessToken, admin: { name: admin.name, role: admin.role } });
-  } catch (err) { return reply.code(500).send({ error: 'Error interno' }); }
+  } catch (err: any) { console.error('ERROR REAL LOGIN:', err); return reply.code(500).send({ error: 'Error interno', details: err?.message || String(err) }); }
 });
 
 app.get('/api/admin/stats', async (req, reply) => {
@@ -89,6 +89,9 @@ app.post('/api/admin/reports/:id/resolve', async (req, reply) => {
 });
 
 app.register(kycAdminRoutes);
+
+console.log('TURSO URL:', process.env.TURSO_DATABASE_URL);
+console.log('JWT_SECRET set:', !!process.env.JWT_SECRET);
 
 const start = async () => {
   try {
