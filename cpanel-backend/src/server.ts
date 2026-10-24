@@ -11,7 +11,7 @@ dotenv.config();
 const app = Fastify({ logger: true, trustProxy: true });
 
 app.register(cors, { 
-  origin: ['http://localhost:5173'], 
+  origin: true, // Permite cualquier origen (ideal para producción abierta o testing) 
   credentials: true 
 });
 app.register(jwt, { secret: process.env.JWT_SECRET || 'super-secret-cpanel-key' });
