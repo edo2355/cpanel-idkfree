@@ -4,6 +4,7 @@ import jwt from '@fastify/jwt';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import { db } from './db.js';
+import { kycAdminRoutes } from './routes/kycAdmin.js';
 
 dotenv.config();
 
@@ -86,6 +87,8 @@ app.post('/api/admin/reports/:id/resolve', async (req, reply) => {
     return reply.send({ ok: true });
   } catch (err) { return reply.code(500).send({ error: 'Error interno' }); }
 });
+
+app.register(kycAdminRoutes);
 
 const start = async () => {
   try {
