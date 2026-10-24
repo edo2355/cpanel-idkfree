@@ -7,6 +7,7 @@ import Reports from './pages/Reports';
 import Audit from './pages/Audit';
 import Telemetry from './pages/Telemetry';
 import Support from './pages/Support';
+import KYCPage from './pages/KYCPage';
 import Login from './pages/Login';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="audit" element={<Audit />} />
           <Route path="telemetry" element={<Telemetry />} />
           <Route path="support" element={<Support />} />
+                <Route path="kyc" element={<KYCPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
