@@ -1,0 +1,23 @@
+:root {
+  --bg: #050505;
+  --surface: #181b21;
+  --surface-elevated: #2a2e39;
+  --text: #ffffff;
+  --text-muted: #a0a5b1;
+  --accent: #00f2fe;
+  --danger: #ff4d4f;
+  --border: #2a2e39;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar estilo app */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: 4px; }
