@@ -28,22 +28,21 @@ app.get('/api/admin/ping', async () => ({ status: 'CPanel Backend funcionando' }
 
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
 
-function rateLimitLogin(req: any, reply: any, done: any) {
-  const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+async function rateLimitLogin(req: any, reply: any) {
+  const email = req.body?.email || req.ip || 'unknown';
   const now = Date.now();
-  const windowMs = 60 * 1000; // 1 minuto
+  const windowMs = 60 * 1000;
   const maxAttempts = 5;
 
-  const record = loginAttempts.get(ip);
+  const record = loginAttempts.get(email);
   if (record && record.resetAt > now) {
     if (record.count >= maxAttempts) {
-      return reply.code(429).send({ error: 'Demasiados intentos de login. Espera 1 minuto.' });
+      return reply.code(429).send({ error: 'Demasiados intentos fallidos para este correo. Espera 1 minuto.' });
     }
     record.count++;
   } else {
-    loginAttempts.set(ip, { count: 1, resetAt: now + windowMs });
+    loginAttempts.set(email, { count: 1, resetAt: now + windowMs });
   }
-  done();
 }
 
 app.post('/api/admin/login', { preHandler: rateLimitLogin }, async (req, reply) => {
