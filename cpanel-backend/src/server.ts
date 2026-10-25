@@ -35,13 +35,11 @@ app.register(cors, {
 app.get('/api/admin/ping', async () => ({ status: 'CPanel Backend funcionando' }));
 
 app.post('/api/admin/login', {
-    config: {
-      rateLimit: {
-        max: 5,
-        timeWindow: '1 minute',
-        errorResponseBuilder: () => ({ error: 'Demasiados intentos de login. Espera 1 minuto.' })
-      }
-    }
+    preHandler: app.rateLimit({
+      max: 5,
+      timeWindow: '1 minute',
+      errorResponseBuilder: () => ({ error: 'Demasiados intentos de login. Espera 1 minuto.' })
+    })
   }, async (req, reply) => {
   const { email, password } = req.body as any;
   if (!email || !password) return reply.code(400).send({ error: 'Email y contraseña requeridos' });
