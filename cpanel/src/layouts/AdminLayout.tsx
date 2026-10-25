@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { FileCheck, KeyRound } from 'lucide-react';
+import { FileCheck, KeyRound, Users2, Settings } from 'lucide-react';
 import { LayoutDashboard, Users, MessageSquare, LogOut, Shield, AlertTriangle, Activity, Globe } from 'lucide-react';
 
 export default function AdminLayout() {
@@ -14,6 +14,8 @@ export default function AdminLayout() {
     { path: '/telemetry', name: 'Telemetría Global', icon: <Globe size={20} /> },
     { path: '/kyc', name: 'Revisión KYC', icon: <FileCheck size={20} /> },
     { path: '/settings', name: 'Seguridad', icon: <KeyRound size={20} /> },
+    { path: '/team', name: 'Equipo (Admins)', icon: <Users2 size={20} /> },
+    { path: '/config', name: 'Tokens y APIs', icon: <Settings size={20} /> },
   ];
 
   return (

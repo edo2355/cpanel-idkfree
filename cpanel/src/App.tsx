@@ -9,6 +9,8 @@ import Telemetry from './pages/Telemetry';
 import Support from './pages/Support';
 import KYCPage from './pages/KYCPage';
 import SettingsPage from './pages/SettingsPage';
+import TeamPage from './pages/TeamPage';
+import ConfigPage from './pages/ConfigPage';
 import Login from './pages/Login';
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
           <Route path="support" element={<Support />} />
                 <Route path="kyc" element={<KYCPage />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="team" element={<TeamPage />} />
+                <Route path="config" element={<ConfigPage />} />
         </Route>
       </Routes>
     </HashRouter>
