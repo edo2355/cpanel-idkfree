@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '../db.js';
+import { requireRole } from '../middleware/roles.js';
 
 // Middleware de seguridad
 async function requireAdmin(req: FastifyRequest, reply: FastifyReply) {
@@ -12,7 +13,7 @@ async function requireAdmin(req: FastifyRequest, reply: FastifyReply) {
 
 export async function kycAdminRoutes(app: FastifyInstance) {
   // 1. Listar solicitudes pendientes
-  app.get('/api/admin/kyc/pending', { preHandler: [requireAdmin] }, async (req, reply) => {
+  app.get('/api/admin/kyc/pending', { preHandler: [requireRole(['owner', 'admin', 'kyc_manager'])] }, async (req, reply) => {
     try {
       const res = await db.execute(`
         SELECT k.user_id, k.document_type, k.document_number,
@@ -31,7 +32,7 @@ export async function kycAdminRoutes(app: FastifyInstance) {
   });
 
   // 2. Aprobar o rechazar
-  app.post('/api/admin/kyc/:user_id/review', { preHandler: [requireAdmin] }, async (req, reply) => {
+  app.post('/api/admin/kyc/:user_id/review', { preHandler: [requireRole(['owner', 'admin', 'kyc_manager'])] }, async (req, reply) => {
     const { user_id } = req.params as any;
     const { action, notes } = req.body as any;
 

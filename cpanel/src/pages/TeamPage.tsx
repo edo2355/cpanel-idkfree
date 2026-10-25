@@ -73,7 +73,9 @@ export default function TeamPage() {
             <input placeholder="Email" type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} style={{ padding: '10px', background: '#0f1115', border: '1px solid #2a2e39', color: '#fff', borderRadius: '4px' }} />
             <input placeholder="Contraseña temporal" type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} style={{ padding: '10px', background: '#0f1115', border: '1px solid #2a2e39', color: '#fff', borderRadius: '4px' }} />
             <select value={form.role} onChange={e => setForm({...form, role: e.target.value})} style={{ padding: '10px', background: '#0f1115', border: '1px solid #2a2e39', color: '#fff', borderRadius: '4px' }}>
-              <option value="moderator">Moderador (KYC/Reportes)</option>
+              <option value="kyc_manager">Gestor KYC (Solo KYC)</option>
+              <option value="support">Soporte (Reportes y Mensajes)</option>
+              <option value="viewer">Visitante (Solo lectura Dashboard)</option>
               <option value="admin">Admin (Todo menos Equipo)</option>
             </select>
             <button type="submit" style={{ background: '#00f2fe', color: '#000', padding: '10px', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>CREAR CUENTA</button>
