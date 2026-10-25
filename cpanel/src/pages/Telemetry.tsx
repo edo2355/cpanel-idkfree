@@ -1,69 +1,88 @@
 import { useState, useEffect } from 'react';
+import { Activity, AlertCircle } from 'lucide-react';
 
 export default function Telemetry() {
   const [logs, setLogs] = useState<any[]>([]);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function fetchLogs() {
-      const token = localStorage.getItem('@idk_cpanel_token');
-      // Asumimos que crearemos esta ruta en el cpanel-backend
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/telemetry`, { headers: { 'Authorization': `Bearer ${token}` }});
-      const data = await res.json();
-      setLogs(data.logs || []);
-      setLoading(false);
+      try {
+        const token = localStorage.getItem('@idk_cpanel_token');
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/telemetry`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        setLogs(data.logs || []);
+      } catch (err: any) {
+        setError(err.message || 'Error al cargar telemetría');
+      } finally {
+        setLoading(false);
+      }
     }
     fetchLogs();
   }, []);
 
-  // Calcular errores por país
-  const errorsByCountry = logs.reduce((acc, log) => {
-    acc[log.country_code] = (acc[log.country_code] || 0) + 1;
+  // Contar por tipo de evento (evita depender de country_code)
+  const eventCounts = logs.reduce((acc, log) => {
+    const type = log.event_type || 'UNKNOWN';
+    acc[type] = (acc[type] || 0) + 1;
     return acc;
-  }, {});
+  }, {} as Record<string, number>);
 
   return (
     <div>
-      <h1 style={{ fontSize: '28px', marginBottom: '20px' }}>Telemetría Global</h1>
-      
-      {/* Gráfico de barras por País */}
-      <div style={{ display: 'flex', gap: '15px', marginBottom: '30px' }}>
-        {Object.entries(errorsByCountry).map(([country, count]: any) => (
-          <div key={country} style={{ background: '#181b21', padding: '15px', borderRadius: '8px', border: '1px solid #2a2e39', minWidth: '100px' }}>
-            <p style={{ margin: 0, color: '#a0a5b1', fontSize: '12px' }}>País: {country}</p>
-            <h2 style={{ margin: '5px 0 0 0', color: '#ff4d4f' }}>{count} <span style={{fontSize: '12px', color: '#fff'}}>errores</span></h2>
-          </div>
-        ))}
-      </div>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+        <Activity color="#00f2fe" /> Telemetría del Sistema
+      </h2>
 
-      <div style={{ background: '#181b21', borderRadius: '10px', border: '1px solid #2a2e39', padding: '20px' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid #2a2e39', color: '#a0a5b1' }}>
-              <th style={{ padding: '10px' }}>Fecha</th>
-              <th style={{ padding: '10px' }}>Plataforma</th>
-              <th style={{ padding: '10px' }}>País</th>
-              <th style={{ padding: '10px' }}>Dispositivo</th>
-              <th style={{ padding: '10px' }}>Error</th>
-            </tr>
-          </thead>
-          <tbody>
-            {logs.map(l => (
-              <tr key={l.id} style={{ borderBottom: '1px solid #2a2e39' }}>
-                <td style={{ padding: '10px', fontSize: '12px' }}>{new Date(l.created_at).toLocaleString()}</td>
-                <td style={{ padding: '10px' }}>
-                  <span style={{ background: l.platform === 'mobile' ? '#00f2fe22' : '#f59e0b22', color: l.platform === 'mobile' ? '#00f2fe' : '#f59e0b', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>
-                    {l.platform.toUpperCase()}
-                  </span>
-                </td>
-                <td style={{ padding: '10px', fontWeight: 'bold' }}>{l.country_code}</td>
-                <td style={{ padding: '10px', fontSize: '12px' }}>{l.device_info || 'N/A'}</td>
-                <td style={{ padding: '10px', color: '#ff4d4f', fontSize: '12px' }}>{l.message}</td>
-              </tr>
+      {loading && <p style={{ color: '#a0a5b1' }}>Cargando logs...</p>}
+      {error && (
+        <div style={{ background: '#ff4d4f22', color: '#ff4d4f', padding: '15px', borderRadius: '6px', marginBottom: '20px' }}>
+          <AlertCircle size={16} /> {error}
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px', marginBottom: '30px' }}>
+            {Object.entries(eventCounts).map(([type, count]) => (
+              <div key={type} style={{ background: '#181b21', padding: '20px', borderRadius: '8px', border: '1px solid #2a2e39' }}>
+                <p style={{ margin: 0, color: '#a0a5b1', fontSize: '12px', textTransform: 'uppercase' }}>{type}</p>
+                <h3 style={{ margin: '10px 0 0 0', color: '#00f2fe', fontSize: '28px' }}>{count as number}</h3>
+              </div>
             ))}
-          </tbody>
-        </table>
-      </div>
+            {Object.keys(eventCounts).length === 0 && (
+              <p style={{ color: '#a0a5b1' }}>No hay logs registrados todavía.</p>
+            )}
+          </div>
+
+          <h3 style={{ marginBottom: '15px' }}>Últimos 50 eventos</h3>
+          <table style={{ width: '100%', borderCollapse: 'collapse', background: '#181b21', borderRadius: '8px', overflow: 'hidden' }}>
+            <thead>
+              <tr style={{ background: '#0f1115', textAlign: 'left', borderBottom: '1px solid #2a2e39' }}>
+                <th style={{ padding: '12px' }}>Fecha</th>
+                <th style={{ padding: '12px' }}>Tipo</th>
+                <th style={{ padding: '12px' }}>Mensaje</th>
+              </tr>
+            </thead>
+            <tbody>
+              {logs.slice(0, 50).map((log, i) => (
+                <tr key={log.id || i} style={{ borderBottom: '1px solid #2a2e39' }}>
+                  <td style={{ padding: '12px', color: '#a0a5b1', fontSize: '12px' }}>{new Date(log.created_at).toLocaleString()}</td>
+                  <td style={{ padding: '12px', color: '#00f2fe', fontWeight: 'bold' }}>{log.event_type}</td>
+                  <td style={{ padding: '12px' }}>{log.message}</td>
+                </tr>
+              ))}
+              {logs.length === 0 && (
+                <tr><td colSpan={3} style={{ padding: '20px', textAlign: 'center', color: '#a0a5b1' }}>Sin logs registrados.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 }
