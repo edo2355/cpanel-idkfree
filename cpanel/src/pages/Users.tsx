@@ -9,24 +9,25 @@ interface User {
   role: string;
   created_at: string;
   posts_count: number;
+  is_test: number;
 }
 
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [filterType, setFilterType] = useState<'real' | 'test'>('real');
 
   useEffect(() => {
     async function fetchUsers() {
+      setLoading(true);
+      setError('');
       try {
         const token = localStorage.getItem('@idk_cpanel_token');
-        // Apuntamos al backend aislado
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/users`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/users?type=${filterType}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-
         if (!res.ok) throw new Error('Error al cargar usuarios');
-
         const data = await res.json();
         setUsers(data.users || []);
       } catch (err: any) {
@@ -36,57 +37,55 @@ export default function Users() {
       }
     }
     fetchUsers();
-  }, []);
+  }, [filterType]);
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '28px', margin: 0 }}>Gestión de Usuarios</h1>
-        <button style={{ background: '#00f2fe', border: 'none', padding: '10px 20px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>
-          + Añadir Usuario
+      <h2>Usuarios</h2>
+      
+      <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+        <button 
+          onClick={() => setFilterType('real')}
+          style={{ padding: '8px 16px', background: filterType === 'real' ? '#00f2fe' : '#181b21', color: filterType === 'real' ? '#000' : '#fff', border: '1px solid #2a2e39', borderRadius: '6px', cursor: 'pointer' }}
+        >
+          REALES
+        </button>
+        <button 
+          onClick={() => setFilterType('test')}
+          style={{ padding: '8px 16px', background: filterType === 'test' ? '#ff4d4f' : '#181b21', color: filterType === 'test' ? '#fff' : '#fff', border: '1px solid #2a2e39', borderRadius: '6px', cursor: 'pointer' }}
+        >
+          PRUEBA
         </button>
       </div>
 
-      {error && <div style={{ background: '#ff4d4f22', color: '#ff4d4f', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>{error}</div>}
+      {loading && <p>Cargando...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      <div style={{ background: '#181b21', borderRadius: '10px', border: '1px solid #2a2e39', overflow: 'hidden' }}>
-        {loading ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#a0a5b1' }}>Cargando usuarios de Turso...</div>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ background: '#0f1115', borderBottom: '1px solid #2a2e39', color: '#a0a5b1', fontSize: '14px' }}>
-                <th style={{ padding: '15px' }}>Alias</th>
-                <th style={{ padding: '15px' }}>Email</th>
-                <th style={{ padding: '15px' }}>Rol</th>
-                <th style={{ padding: '15px' }}>Tipo</th>
-                <th style={{ padding: '15px' }}>Posts</th>
-                <th style={{ padding: '15px' }}>Registro</th>
+      {!loading && !error && (
+        <table style={{ width: '100%', borderCollapse: 'collapse', background: '#181b21', borderRadius: '8px', overflow: 'hidden' }}>
+          <thead>
+            <tr style={{ background: '#0f1115', textAlign: 'left', borderBottom: '1px solid #2a2e39' }}>
+              <th style={{ padding: '12px' }}>Alias</th>
+              <th style={{ padding: '12px' }}>Nombre</th>
+              <th style={{ padding: '12px' }}>Correo</th>
+              <th style={{ padding: '12px' }}>Posts</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.length === 0 && (
+              <tr><td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: '#a0a5b1' }}>No hay usuarios en esta categoría.</td></tr>
+            )}
+            {users.map((u) => (
+              <tr key={u.id} style={{ borderBottom: '1px solid #2a2e39' }}>
+                <td style={{ padding: '12px' }}>@{u.alias}</td>
+                <td style={{ padding: '12px' }}>{u.name}</td>
+                <td style={{ padding: '12px' }}>{u.email}</td>
+                <td style={{ padding: '12px' }}>{u.posts_count}</td>
               </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id} style={{ borderBottom: '1px solid #2a2e39', fontSize: '14px' }}>
-                  <td style={{ padding: '15px', fontWeight: 'bold' }}>@{user.alias}</td>
-                  <td style={{ padding: '15px', color: '#a0a5b1' }}>{user.email}</td>
-                  <td style={{ padding: '15px' }}>
-                    <span style={{ 
-                      background: user.role === 'owner' ? '#00f2fe33' : user.role === 'admin' ? '#ff4d4f33' : user.role === 'support' ? '#f59e0b33' : '#a0a5b133',
-                      color: user.role === 'owner' ? '#00f2fe' : user.role === 'admin' ? '#ff4d4f' : user.role === 'support' ? '#f59e0b' : '#a0a5b1',
-                      padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold'
-                    }}>
-                      {user.role.toUpperCase()}
-                    </span>
-                  </td>
-                  <td style={{ padding: '15px', color: '#a0a5b1' }}>{user.account_type}</td>
-                  <td style={{ padding: '15px' }}>{user.posts_count}</td>
-                  <td style={{ padding: '15px', color: '#a0a5b1' }}>{new Date(user.created_at).toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
