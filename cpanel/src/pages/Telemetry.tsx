@@ -8,7 +8,7 @@ export default function Telemetry() {
     async function fetchLogs() {
       const token = localStorage.getItem('@idk_cpanel_token');
       // Asumimos que crearemos esta ruta en el cpanel-backend
-      const res = await fetch('http://localhost:3001/api/admin/telemetry', { headers: { 'Authorization': `Bearer ${token}` }});
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/telemetry', { headers: { 'Authorization': `Bearer ${token}` }});
       const data = await res.json();
       setLogs(data.logs || []);
       setLoading(false);

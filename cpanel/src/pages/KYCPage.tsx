@@ -23,7 +23,7 @@ export default function KYCPage() {
   const [processing, setProcessing] = useState(false);
 
   const token = localStorage.getItem('@idk_cpanel_token');
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const API_URL = import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}';
 
   async function loadPending() {
     setLoading(true);
