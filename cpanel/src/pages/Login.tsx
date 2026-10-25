@@ -30,6 +30,7 @@ export default function Login({ setToken }: { setToken: (t: string) => void }) {
       } else {
         // Si el backend no tiene 2FA aún, entra directo
         localStorage.setItem('@idk_cpanel_token', data.accessToken);
+        localStorage.setItem('@idk_cpanel_admin', JSON.stringify(data.admin));
         setToken(data.accessToken);
         navigate('/');
       }
