@@ -8,6 +8,7 @@ import Audit from './pages/Audit';
 import Telemetry from './pages/Telemetry';
 import Support from './pages/Support';
 import KYCPage from './pages/KYCPage';
+import SettingsPage from './pages/SettingsPage';
 import Login from './pages/Login';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="telemetry" element={<Telemetry />} />
           <Route path="support" element={<Support />} />
                 <Route path="kyc" element={<KYCPage />} />
+                <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

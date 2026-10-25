@@ -59,6 +59,32 @@ app.post('/api/admin/login', {
   } catch (err: any) { console.error('ERROR REAL LOGIN:', err); return reply.code(500).send({ error: 'Error interno', details: err?.message || String(err) }); }
 });
 
+app.put('/api/admin/password', { preHandler: [requireAdmin] }, async (req, reply) => {
+  const { currentPassword, newPassword } = req.body as any;
+  if (!currentPassword || !newPassword || newPassword.length < 6) {
+    return reply.code(400).send({ error: 'Datos inválidos. La nueva contraseña debe tener al menos 6 caracteres.' });
+  }
+
+  try {
+    const adminId = (req.user as any).sub;
+    const res = await db.execute({ sql: 'SELECT password_hash FROM admins WHERE id = ?', args: [adminId] });
+    const admin = res.rows[0];
+    
+    if (!admin) return reply.code(404).send({ error: 'Admin no encontrado' });
+
+    const isValid = await bcrypt.compare(currentPassword, admin.password_hash as string);
+    if (!isValid) return reply.code(401).send({ error: 'La contraseña actual es incorrecta' });
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await db.execute({ sql: 'UPDATE admins SET password_hash = ? WHERE id = ?', args: [newHash, adminId] });
+
+    return reply.send({ ok: true, message: 'Contraseña actualizada correctamente' });
+  } catch (err) {
+    app.log.error({ err }, 'Error al cambiar contraseña');
+    return reply.code(500).send({ error: 'Error interno' });
+  }
+});
+
 app.get('/api/admin/stats', { preHandler: [requireAdmin] }, async (req, reply) => {
   try {
     const users = await db.execute('SELECT COUNT(*) as count FROM users WHERE deleted_at IS NULL');
