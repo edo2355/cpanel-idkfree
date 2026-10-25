@@ -12,6 +12,7 @@ import SettingsPage from './pages/SettingsPage';
 import TeamPage from './pages/TeamPage';
 import ConfigPage from './pages/ConfigPage';
 import DatabasePage from './pages/DatabasePage';
+import GitHubPage from './pages/GitHubPage';
 import Login from './pages/Login';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
                 <Route path="team" element={<TeamPage />} />
                 <Route path="config" element={<ConfigPage />} />
                 <Route path="database" element={<DatabasePage />} />
+                <Route path="github" element={<GitHubPage />} />
         </Route>
       </Routes>
     </HashRouter>

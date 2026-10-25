@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, MessageSquare, LogOut, Shield, AlertTriangle, Activity, Globe, FileCheck, KeyRound, Users2, Settings, Database } from 'lucide-react';
+import { LayoutDashboard, Users, MessageSquare, LogOut, Shield, AlertTriangle, Activity, Globe, FileCheck, KeyRound, Users2, Settings, Database, GitBranch } from 'lucide-react';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -18,6 +18,7 @@ export default function AdminLayout() {
     { path: '/team', name: 'Equipo (Admins)', icon: <Users2 size={20} />, roles: ['owner'] },
     { path: '/config', name: 'Tokens y APIs', icon: <Settings size={20} />, roles: ['owner'] },
     { path: '/database', name: 'Consola SQL', icon: <Database size={20} />, roles: ['owner'] },
+    { path: '/github', name: 'Explorador de Código', icon: <GitBranch size={20} />, roles: ['owner'] },
   ];
 
   const visibleMenu = menuItems.filter(item => item.roles.includes(role));
