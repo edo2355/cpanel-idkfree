@@ -16,7 +16,8 @@ async function requireAdmin(req: any, reply: any) {
 }
 
 app.register(cors, { 
-  origin: ['https://cpanel-idkfree-web.onrender.com', 'http://localhost:5173'], // 🛡️ Solo tu Cpanel y local 
+  origin: ['https://cpanel-idkfree-web.onrender.com', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // 🛡️ Solo tu Cpanel y local 
   credentials: true 
 });
 // 🛡️ CABECERAS DE SEGURIDAD
