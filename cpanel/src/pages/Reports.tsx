@@ -3,7 +3,7 @@ export default function Reports() {
   const [reports, setReports] = useState<any[]>([]);
   const fetchReports = async () => {
     const token = localStorage.getItem('@idk_cpanel_token');
-    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/reports`, { headers: { 'Authorization': `Bearer ${token}` }});
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/reports', { headers: { 'Authorization': `Bearer ${token}` }});
     const data = await res.json(); setReports(data.reports || []);
   };
   useEffect(() => { fetchReports(); }, []);

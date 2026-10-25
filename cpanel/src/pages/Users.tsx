@@ -21,7 +21,7 @@ export default function Users() {
       try {
         const token = localStorage.getItem('@idk_cpanel_token');
         // Apuntamos al backend aislado
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/users`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/users', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
