@@ -1,6 +1,5 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import rateLimit from '@fastify/rate-limit';
 import helmet from '@fastify/helmet';
 import jwt from '@fastify/jwt';
 import dotenv from 'dotenv';
@@ -23,24 +22,31 @@ app.register(cors, {
 // 🛡️ CABECERAS DE SEGURIDAD
   app.register(helmet, { contentSecurityPolicy: false });
   
-  // 🛡️ RATE LIMIT GLOBAL (Máximo 100 peticiones por minuto por IP)
-  app.register(rateLimit, {
-    max: 100,
-    timeWindow: '1 minute',
-    errorResponseBuilder: () => ({ error: 'Demasiadas peticiones. Por seguridad, has sido bloqueado temporalmente.' })
-  });
-
-  app.register(jwt, { secret: process.env.JWT_SECRET || 'super-secret-cpanel-key' });
+    app.register(jwt, { secret: process.env.JWT_SECRET || 'super-secret-cpanel-key' });
 
 app.get('/api/admin/ping', async () => ({ status: 'CPanel Backend funcionando' }));
 
-app.post('/api/admin/login', {
-    preHandler: app.rateLimit({
-      max: 5,
-      timeWindow: '1 minute',
-      errorResponseBuilder: () => ({ error: 'Demasiados intentos de login. Espera 1 minuto.' })
-    })
-  }, async (req, reply) => {
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function rateLimitLogin(req: any, reply: any, done: any) {
+  const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minuto
+  const maxAttempts = 5;
+
+  const record = loginAttempts.get(ip);
+  if (record && record.resetAt > now) {
+    if (record.count >= maxAttempts) {
+      return reply.code(429).send({ error: 'Demasiados intentos de login. Espera 1 minuto.' });
+    }
+    record.count++;
+  } else {
+    loginAttempts.set(ip, { count: 1, resetAt: now + windowMs });
+  }
+  done();
+}
+
+app.post('/api/admin/login', { preHandler: rateLimitLogin }, async (req, reply) => {
   const { email, password } = req.body as any;
   if (!email || !password) return reply.code(400).send({ error: 'Email y contraseña requeridos' });
 
