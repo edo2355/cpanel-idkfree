@@ -51,7 +51,7 @@ export async function adminManagementRoutes(app: FastifyInstance) {
   app.get('/api/admin/settings', { preHandler: [requireOwner] }, async (req, reply) => {
     const res = await db.execute('SELECT key, value FROM app_settings');
     const settings: any = {};
-    res.rows.forEach(r => { settings[r.key] = r.value; });
+    res.rows.forEach(r => { settings[r.key as string] = r.value; });
     return reply.send({ settings });
   });
 
