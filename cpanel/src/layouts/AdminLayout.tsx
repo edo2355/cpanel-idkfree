@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, MessageSquare, LogOut, Shield, AlertTriangle, Activity, Globe, FileCheck, KeyRound, Users2, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, MessageSquare, LogOut, Shield, AlertTriangle, Activity, Globe, FileCheck, KeyRound, Users2, Settings, Database } from 'lucide-react';
 
 export default function AdminLayout() {
   const location = useLocation();
