@@ -55,7 +55,7 @@ app.post('/api/admin/login', { preHandler: rateLimitLogin }, async (req, reply) 
     if (!admin) return reply.code(401).send({ error: 'Credenciales inválidas' });
 
     const isValid = await bcrypt.compare(password, admin.password_hash as string);
-    if (!isValid) return reply.code(401).send({ error: 'Credenciales inválidas' });
+    if (!isValid) { await saveLogToDB('LOGIN_FAILED', `Intento de login fallido para ${email}`); return reply.code(401).send({ error: 'Credenciales inválidas' }); }
 
     const accessToken = app.jwt.sign({ sub: admin.id, role: admin.role }, { expiresIn: '2h' });
     return reply.send({ accessToken, admin: { name: admin.name, role: admin.role } });
@@ -119,7 +119,7 @@ app.get('/api/admin/logs', async (req, reply) => {
   } catch (err) { return reply.code(500).send({ error: 'Error interno' }); }
 });
 
-app.get('/api/admin/telemetry', async (req, reply) => {
+app.get('/api/admin/telemetry', { preHandler: [requireAdmin] }, async (req, reply) => {
   try {
     const res = await db.execute('SELECT * FROM system_logs ORDER BY created_at DESC LIMIT 100');
     return reply.send({ logs: res.rows });
@@ -141,10 +141,29 @@ app.post('/api/admin/reports/:id/resolve', async (req, reply) => {
   } catch (err) { return reply.code(500).send({ error: 'Error interno' }); }
 });
 
+app.setErrorHandler(async (error, request, reply) => {
+  app.log.error(error);
+  await saveLogToDB('ERROR_SERVER', error.message, { url: request.url, method: request.method, stack: error.stack });
+  reply.status(500).send({ error: 'Error interno del servidor', details: error.message });
+});
+
 app.register(kycAdminRoutes);
 
 console.log('TURSO URL:', process.env.TURSO_DATABASE_URL);
 console.log('JWT_SECRET set:', !!process.env.JWT_SECRET);
+
+import crypto from 'crypto';
+
+async function saveLogToDB(event_type: string, message: string, details: any = null) {
+  try {
+    await db.execute({
+      sql: 'INSERT INTO system_logs (id, event_type, message, details) VALUES (?, ?, ?, ?)',
+      args: [crypto.randomUUID(), event_type, message, details ? JSON.stringify(details) : null]
+    });
+  } catch (e) {
+    console.error('No se pudo guardar el log en DB:', e);
+  }
+}
 
 const start = async () => {
   try {
