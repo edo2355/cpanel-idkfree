@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { GitBranch, FileCode, Loader, ArrowLeft } from 'lucide-react';
+import { GitBranch, FileCode, ArrowLeft } from 'lucide-react';
 
 const REPO = 'edo2355/cpanel-idkfree';
 const BRANCH = 'main';
