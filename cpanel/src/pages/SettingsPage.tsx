@@ -21,7 +21,7 @@ export default function SettingsPage() {
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/password`, {
-        method: 'PUT',
+        method: `PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('@idk_cpanel_token')}`
