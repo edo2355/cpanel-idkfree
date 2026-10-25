@@ -141,7 +141,7 @@ app.post('/api/admin/reports/:id/resolve', async (req, reply) => {
   } catch (err) { return reply.code(500).send({ error: 'Error interno' }); }
 });
 
-app.setErrorHandler(async (error, request, reply) => {
+app.setErrorHandler(async (error: any, request, reply) => {
   app.log.error(error);
   await saveLogToDB('ERROR_SERVER', error.message, { url: request.url, method: request.method, stack: error.stack });
   reply.status(500).send({ error: 'Error interno del servidor', details: error.message });
