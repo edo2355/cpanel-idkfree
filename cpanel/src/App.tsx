@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AdminLayout from './layouts/AdminLayout';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
@@ -15,7 +15,7 @@ function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('@idk_cpanel_token'));
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* Ruta de Login */}
         <Route path="/login" element={token ? <Navigate to="/" /> : <Login setToken={setToken} />} />
@@ -32,7 +32,7 @@ function App() {
                 <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
