@@ -7,6 +7,7 @@ import bcrypt from 'bcryptjs';
 import { db } from './db.js';
 import { kycAdminRoutes } from './routes/kycAdmin.js';
 import { adminManagementRoutes } from './routes/adminManagement.js';
+import { databaseRoutes } from './routes/database.js';
 
 dotenv.config();
 
@@ -156,6 +157,7 @@ app.setErrorHandler(async (error: any, request, reply) => {
 
 app.register(kycAdminRoutes);
 app.register(adminManagementRoutes);
+app.register(databaseRoutes);
 
 console.log('TURSO URL:', process.env.TURSO_DATABASE_URL);
 console.log('JWT_SECRET set:', !!process.env.JWT_SECRET);

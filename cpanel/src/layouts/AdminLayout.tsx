@@ -17,6 +17,7 @@ export default function AdminLayout() {
     { path: '/settings', name: 'Seguridad', icon: <KeyRound size={20} />, roles: ['owner', 'admin', 'kyc_manager', 'support', 'viewer'] },
     { path: '/team', name: 'Equipo (Admins)', icon: <Users2 size={20} />, roles: ['owner'] },
     { path: '/config', name: 'Tokens y APIs', icon: <Settings size={20} />, roles: ['owner'] },
+    { path: '/database', name: 'Consola SQL', icon: <Database size={20} />, roles: ['owner'] },
   ];
 
   const visibleMenu = menuItems.filter(item => item.roles.includes(role));

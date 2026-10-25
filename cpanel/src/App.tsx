@@ -11,6 +11,7 @@ import KYCPage from './pages/KYCPage';
 import SettingsPage from './pages/SettingsPage';
 import TeamPage from './pages/TeamPage';
 import ConfigPage from './pages/ConfigPage';
+import DatabasePage from './pages/DatabasePage';
 import Login from './pages/Login';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="team" element={<TeamPage />} />
                 <Route path="config" element={<ConfigPage />} />
+                <Route path="database" element={<DatabasePage />} />
         </Route>
       </Routes>
     </HashRouter>
