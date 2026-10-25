@@ -103,13 +103,18 @@ app.get('/api/admin/stats', { preHandler: [requireAdmin] }, async (req, reply) =
 
 app.get('/api/admin/users', { preHandler: [requireAdmin] }, async (req, reply) => {
   try {
+    const type = (req.query as any).type || 'real';
+    const condition = type === 'test' ? 'is_test = 1' : 'is_test = 0';
+    
     const res = await db.execute(`
-      SELECT id, alias, name, email, account_type, role, created_at,
-      (SELECT COUNT(*) FROM posts WHERE author_id = users.id) as posts_count
-      FROM users WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 50
+      SELECT id, alias, name, email, account_type, role, created_at, is_test,
+             (SELECT COUNT(*) FROM posts WHERE author_id = users.id) as posts_count
+      FROM users WHERE deleted_at IS NULL AND ${condition} ORDER BY created_at DESC LIMIT 50
     `);
     return reply.send({ users: res.rows });
-  } catch (err) { return reply.code(500).send({ error: 'Error interno' }); }
+  } catch (err) {
+    return reply.code(500).send({ error: 'Error interno' });
+  }
 });
 
 app.get('/api/admin/logs', async (req, reply) => {
