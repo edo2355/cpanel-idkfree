@@ -8,9 +8,8 @@ export default function Dashboard() {
     async function fetchStats() {
       try {
         const token = localStorage.getItem('@idk_cpanel_token');
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/stats`, {
-          headers: {
-          'Authorization': `Bearer ${localStorage.getItem('@idk_cpanel_token')}`, 'Authorization': `Bearer ${token}` }
+        const res = await fetch('https://idkfreegetid.dpdns.org/api/admin/stats', {
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
           const data = await res.json();

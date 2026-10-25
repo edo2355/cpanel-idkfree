@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 
 export default function Telemetry() {
   const [logs, setLogs] = useState<any[]>([]);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchLogs() {
       const token = localStorage.getItem('@idk_cpanel_token');
       // Asumimos que crearemos esta ruta en el cpanel-backend
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/telemetry', { headers: { 'Authorization': `Bearer ${token}` }});
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/telemetry`, { headers: { 'Authorization': `Bearer ${token}` }});
       const data = await res.json();
       setLogs(data.logs || []);
       setLoading(false);
