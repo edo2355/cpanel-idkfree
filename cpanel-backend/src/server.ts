@@ -10,6 +10,10 @@ dotenv.config();
 
 const app = Fastify({ logger: true, trustProxy: true });
 
+async function requireAdmin(req: any, reply: any) {
+  try { await req.jwtVerify(); } catch { return reply.code(401).send({ error: 'No autenticado' }); }
+}
+
 app.register(cors, { 
   origin: true, // Permite cualquier origen (ideal para producción abierta o testing) 
   credentials: true 
@@ -35,7 +39,7 @@ app.post('/api/admin/login', async (req, reply) => {
   } catch (err: any) { console.error('ERROR REAL LOGIN:', err); return reply.code(500).send({ error: 'Error interno', details: err?.message || String(err) }); }
 });
 
-app.get('/api/admin/stats', async (req, reply) => {
+app.get('/api/admin/stats', { preHandler: [requireAdmin] }, async (req, reply) => {
   try {
     const users = await db.execute('SELECT COUNT(*) as count FROM users WHERE deleted_at IS NULL');
     const posts = await db.execute('SELECT COUNT(*) as count FROM posts WHERE deleted_at IS NULL');
@@ -48,7 +52,7 @@ app.get('/api/admin/stats', async (req, reply) => {
   } catch (err) { return reply.code(500).send({ error: 'Error interno' }); }
 });
 
-app.get('/api/admin/users', async (req, reply) => {
+app.get('/api/admin/users', { preHandler: [requireAdmin] }, async (req, reply) => {
   try {
     const res = await db.execute(`
       SELECT id, alias, name, email, account_type, role, created_at,
