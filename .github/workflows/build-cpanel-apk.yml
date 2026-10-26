@@ -49,16 +49,33 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
+      - name: Verificar Secrets (solo longitudes, no valores)
+        run: |
+          echo "CPANEL_KEYSTORE_BASE64 length: ${#CPANEL_KEYSTORE_BASE64}"
+          echo "CPANEL_KEYSTORE_PASSWORD length: ${#CPANEL_KEYSTORE_PASSWORD}"
+          echo "CPANEL_KEY_ALIAS: $CPANEL_KEY_ALIAS"
+          echo "CPANEL_KEY_PASSWORD length: ${#CPANEL_KEY_PASSWORD}"
+        env:
+          CPANEL_KEYSTORE_BASE64: ${{ secrets.CPANEL_KEYSTORE_BASE64 }}
+          CPANEL_KEYSTORE_PASSWORD: ${{ secrets.CPANEL_KEYSTORE_PASSWORD }}
+          CPANEL_KEY_ALIAS: ${{ secrets.CPANEL_KEY_ALIAS }}
+          CPANEL_KEY_PASSWORD: ${{ secrets.CPANEL_KEY_PASSWORD }}
+
       - name: Configurar Keystore
         run: |
           echo "${{ secrets.CPANEL_KEYSTORE_BASE64 }}" | base64 -d > cpanel-release.keystore
+          ls -lh cpanel-release.keystore
 
       - name: Firmar APK con apksigner
         run: |
           UNSIGNED_APK=$(find cpanel/android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
           echo "Firmando: $UNSIGNED_APK"
-          
-          apksigner sign \
+
+          # Buscar apksigner dinámicamente en el SDK de Android
+          APKSIGNER=$(find $ANDROID_HOME/build-tools -name "apksigner" -type f 2>/dev/null | head -n 1)
+          echo "apksigner encontrado en: $APKSIGNER"
+
+          $APKSIGNER sign \
             --ks cpanel-release.keystore \
             --ks-pass "pass:${{ secrets.CPANEL_KEYSTORE_PASSWORD }}" \
             --ks-key-alias "${{ secrets.CPANEL_KEY_ALIAS }}" \
