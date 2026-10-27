@@ -5,3 +5,8 @@ dist/
 .env.production
 *.log
 .DS_Store
+
+# Keystores y firmas (NUNCA subir a git)
+*.keystore
+*.jks
+*.p12
