@@ -14,6 +14,7 @@ import ConfigPage from './pages/ConfigPage';
 import DatabasePage from './pages/DatabasePage';
 import GitHubPage from './pages/GitHubPage';
 import Login from './pages/Login';
+import CrossBorderPage from './pages/CrossBorderPage';
 
 function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('@idk_cpanel_token'));
@@ -38,6 +39,7 @@ function App() {
                 <Route path="config" element={<ConfigPage />} />
                 <Route path="database" element={<DatabasePage />} />
                 <Route path="github" element={<GitHubPage />} />
+          <Route path="cross-border" element={<CrossBorderPage />} />
         </Route>
       </Routes>
     </HashRouter>

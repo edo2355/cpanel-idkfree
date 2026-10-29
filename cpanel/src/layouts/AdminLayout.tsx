@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, MessageSquare, LogOut, Shield, AlertTriangle, Activity, Globe, FileCheck, KeyRound, Users2, Settings, Database, GitBranch } from 'lucide-react';
+import { Store } from 'lucide-react';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -14,6 +15,7 @@ export default function AdminLayout() {
     { path: '/audit', name: 'Auditoría', icon: <Activity size={20} />, roles: ['owner', 'admin'] },
     { path: '/telemetry', name: 'Telemetría Global', icon: <Globe size={20} />, roles: ['owner', 'admin'] },
     { path: '/kyc', name: 'Revisión KYC', icon: <FileCheck size={20} />, roles: ['owner', 'admin', 'kyc_manager'] },
+    { path: '/cross-border', name: 'Cross-Border', icon: <Store size={20} />, roles: ['owner', 'admin', 'kyc_manager'] },
     { path: '/settings', name: 'Seguridad', icon: <KeyRound size={20} />, roles: ['owner', 'admin', 'kyc_manager', 'support', 'viewer'] },
     { path: '/team', name: 'Equipo (Admins)', icon: <Users2 size={20} />, roles: ['owner'] },
     { path: '/config', name: 'Tokens y APIs', icon: <Settings size={20} />, roles: ['owner'] },
