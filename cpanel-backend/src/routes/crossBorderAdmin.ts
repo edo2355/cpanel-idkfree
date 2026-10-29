@@ -3,21 +3,26 @@ import { db } from '../db.js';
 import { requireRole } from '../middleware/roles.js';
 
 export async function crossBorderAdminRoutes(app: FastifyInstance) {
-  // Listar suppliers pendientes
-  app.get('/api/admin/cross-border/suppliers/pending', { preHandler: [requireRole(['owner', 'admin', 'kyc_manager'])] }, async (_req, reply) => {
+  // Listar suppliers (con filtro de status)
+  app.get('/api/admin/cross-border/suppliers', { preHandler: [requireRole(['owner', 'admin', 'kyc_manager'])] }, async (req, reply) => {
+    const { status } = req.query as { status?: string };
+    let where = '';
+    if (status === 'pending') where = 'WHERE verified_at IS NULL';
+    else if (status === 'verified') where = 'WHERE verified_at IS NOT NULL';
+
     try {
       const res = await db.execute(`
         SELECT id, user_id, company_name, country_code, categories,
                min_order_value, currency, contact_whatsapp, contact_email,
-               contact_wechat, website, created_at
+               contact_wechat, website, created_at, verified_at, verified_by
         FROM supplier_profiles
-        WHERE verified_at IS NULL
-        ORDER BY created_at ASC
+        ${where}
+        ORDER BY created_at DESC
         LIMIT 100
       `);
-      return reply.send({ pending: res.rows });
+      return reply.send({ suppliers: res.rows });
     } catch (err) {
-      app.log.error({ err }, 'Error en cross-border/suppliers/pending');
+      app.log.error({ err }, 'Error en cross-border/suppliers');
       return reply.code(500).send({ error: 'Error interno' });
     }
   });
@@ -43,20 +48,25 @@ export async function crossBorderAdminRoutes(app: FastifyInstance) {
     }
   });
 
-  // Listar influencers pendientes
-  app.get('/api/admin/cross-border/influencers/pending', { preHandler: [requireRole(['owner', 'admin', 'kyc_manager'])] }, async (_req, reply) => {
+  // Listar influencers (con filtro de status)
+  app.get('/api/admin/cross-border/influencers', { preHandler: [requireRole(['owner', 'admin', 'kyc_manager'])] }, async (req, reply) => {
+    const { status } = req.query as { status?: string };
+    let where = '';
+    if (status === 'pending') where = 'WHERE verified_at IS NULL';
+    else if (status === 'verified') where = 'WHERE verified_at IS NOT NULL';
+
     try {
       const res = await db.execute(`
         SELECT id, user_id, niche, platforms, followers_count,
-               rate_per_post, rate_per_live, currency, country_code, created_at
+               rate_per_post, rate_per_live, currency, country_code, created_at, verified_at
         FROM influencer_profiles
-        WHERE verified_at IS NULL
-        ORDER BY created_at ASC
+        ${where}
+        ORDER BY created_at DESC
         LIMIT 100
       `);
-      return reply.send({ pending: res.rows });
+      return reply.send({ influencers: res.rows });
     } catch (err) {
-      app.log.error({ err }, 'Error en cross-border/influencers/pending');
+      app.log.error({ err }, 'Error en cross-border/influencers');
       return reply.code(500).send({ error: 'Error interno' });
     }
   });
