@@ -8,6 +8,7 @@ import { db } from './db.js';
 import { kycAdminRoutes } from './routes/kycAdmin.js';
 import { adminManagementRoutes } from './routes/adminManagement.js';
 import { databaseRoutes } from './routes/database.js';
+import { crossBorderAdminRoutes } from './routes/crossBorderAdmin.js';
 
 dotenv.config();
 
@@ -177,7 +178,11 @@ async function saveLogToDB(event_type: string, message: string, details: any = n
 
 const start = async () => {
   try {
-    await app.listen({ port: Number(process.env.PORT) || 3001, host: '0.0.0.0' });
+    await 
+  // Cross-border admin (suppliers + influencers)
+  await app.register(crossBorderAdminRoutes);
+
+app.listen({ port: Number(process.env.PORT) || 3001, host: '0.0.0.0' });
     console.log('🛡️ CPanel Backend aislado corriendo en el puerto 3001');
   } catch (err) {
     app.log.error(err);
