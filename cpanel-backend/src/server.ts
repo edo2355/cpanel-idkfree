@@ -1,3 +1,4 @@
+import { waitlistAdminRoutes } from './routes/waitlistAdmin.js';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
@@ -181,6 +182,8 @@ const start = async () => {
     await 
   // Cross-border admin (suppliers + influencers)
   await app.register(crossBorderAdminRoutes);
+
+app.register(waitlistAdminRoutes);
 
 app.listen({ port: Number(process.env.PORT) || 3001, host: '0.0.0.0' });
     console.log('🛡️ CPanel Backend aislado corriendo en el puerto 3001');
