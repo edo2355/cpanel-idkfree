@@ -2,7 +2,6 @@ import { FastifyInstance } from 'fastify';
 import { db } from '../db.js';
 
 export async function waitlistAdminRoutes(app: FastifyInstance) {
-  // 1. Estadísticas generales (se puede llamar desde el Dashboard)
   app.get('/api/admin/waitlist/stats', async (req, reply) => {
     try {
       const total = await db.execute('SELECT COUNT(*) as c FROM waitlist');
@@ -19,7 +18,6 @@ export async function waitlistAdminRoutes(app: FastifyInstance) {
     }
   });
 
-  // 2. Últimos registrados (para la tabla)
   app.get('/api/admin/waitlist/recent', async (req, reply) => {
     try {
       const res = await db.execute('SELECT alias, position, referral_code, is_early_access, created_at FROM waitlist ORDER BY created_at DESC LIMIT 10');

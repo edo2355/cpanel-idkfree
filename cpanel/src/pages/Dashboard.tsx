@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import WaitlistWidget from '../components/WaitlistWidget';
+import { useState, useEffect } from 'react';
 export default function Dashboard() {
   const [stats, setStats] = useState({ users: 0, posts: 0, messages: 0 });
   const [loading, setLoading] = useState(true);
@@ -50,6 +50,7 @@ export default function Dashboard() {
         </div>
 
       </div>
-    </div>
- <WaitlistWidget /> );
+      <WaitlistWidget />
+      </div>
+  );
 }
